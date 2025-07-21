@@ -20,23 +20,19 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/account/register", "/forum/posts/**")
-                    .permitAll()
+                .permitAll()
                 .requestMatchers("/account/user/{login}/role/{role}")
-                    .hasRole(Role.ADMINISTRATOR.name())
+                .hasRole(Role.ADMINISTRATOR.name())
                 .requestMatchers(HttpMethod.PATCH, "/account/user/{login}")
-                    .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
+                .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
                 .requestMatchers(HttpMethod.DELETE, "/account/user/{login}")
-                    .access(new WebExpressionAuthorizationManager("#login == authentication.name or hasRole('ADMINISTRATOR')"))
-                .requestMatchers(HttpMethod.PATCH, "/forum/post/{id}/like")
-                    .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
-                .requestMatchers(HttpMethod.PATCH, "/forum/post/{id}/like/{user}")
-                     .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
-                .requestMatchers(HttpMethod.DELETE, "/forum/post/{id}")
-                     .access(new WebExpressionAuthorizationManager("#login == authentication.name or hasRole('ADMINISTRATOR')"))
-                .requestMatchers(HttpMethod.PATCH, "/forum/post/{id}")
-                     .access(new WebExpressionAuthorizationManager("#login == authentication.name or hasRole('ADMINISTRATOR')"))
+                .access(new WebExpressionAuthorizationManager("#login == authentication.name or hasRole('ADMINISTRATOR')"))
+                .requestMatchers(HttpMethod.POST, "/forum/post/{author}")
+                .access(new WebExpressionAuthorizationManager("#author == authentication.name"))
+                .requestMatchers(HttpMethod.PATCH, "/forum/post/{id}/comment/{author}")
+                .access(new WebExpressionAuthorizationManager("#author == authentication.name"))
                 .anyRequest()
-                    .authenticated()
+                .authenticated()
         );
         return http.build();
     }
